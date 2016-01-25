@@ -1,0 +1,127 @@
+<!--
+  #%L
+  Active Home :: Auth
+  $Id:$
+  $HeadURL:$
+  %%
+  Copyright (C) 2016 org.activehome
+  %%
+  This program is free software: you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as
+  published by the Free Software Foundation, either version 3 of the 
+  License, or (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+  
+  You should have received a copy of the GNU General Public 
+  License along with this program.  If not, see
+  <http://www.gnu.org/licenses/gpl-3.0.html>.
+  #L%
+  -->
+<link rel="import" href="/bower_components/paper-input/paper-input.html">
+<link rel="import" href="/bower_components/paper-button/paper-button.html">
+<link rel="import" href="/bower_components/iron-icon/iron-icon.html">
+<link rel="import" href="/bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="/bower_components/iron-ajax/iron-ajax.html">
+
+<dom-module id="auth-view">
+
+    <template>
+
+        <style>
+            #auth {
+                max-width: 300px;
+                margin: 100px auto 20px auto;
+                padding: 20px;
+                border-radius: 2px;
+                -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+                box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+                background-color: rgba(145, 255, 98, 0.5);
+            }
+        </style>
+
+        <iron-ajax id="ajax" handle-as="json" on-response="handleResponse"></iron-ajax>
+        <div id="auth" style="text-align: center;color: white">
+            Log in to access your account:<br>
+            <paper-input class="blackInput" label="User" name="user" value="{{userId}}"></paper-input>
+            <paper-input-decorator label="Password">
+                <input id="password" class="blackInput" is="core-input" name="pass" type="password" value="{{pass}}"/>
+            </paper-input-decorator>
+            <paper-button raised on-click="{{sendAuthDetails}}">
+                <iron-icon icon="check"></iron-icon>
+                Valid
+            </paper-button>
+            <div id="error" style="color: #ff0000">{{errorMsg}}</div>
+        </div>
+    </template>
+
+    <script>
+        Polymer({
+            is: 'auth-view',
+            properties: {
+                redirect: {
+                    type: String,
+                    value: ""
+                }
+            },
+            errorMsg: "",
+
+
+            ready: function () {
+                if (localStorage.getItem("userid") != undefined && localStorage.getItem("pass") != undefined) {
+                    this.userId = localStorage.getItem("userid");
+                    this.pass = localStorage.getItem("pass");
+                    this.sendAuthDetails();
+                }
+            },
+
+            sendAuthDetails: function () {
+                if (this.userId != "" && this.pass != "") {
+                    localStorage.pass = this.pass;
+                    var ajax = this.$.ajax;
+                    ajax.method = "POST";
+                    ajax.url = "/${id}/authenticate/" + this.userId + "/" + this.pass;
+                    ajax.generateRequest();
+                }
+            },
+
+            error: function (msg) {
+                this.errorMsg = "Error: " + msg;
+            },
+
+            handleResponse: function (e) {
+                var data = e.detail.response;
+                if (data.hasOwnProperty("error")) {
+                    this.error(data.error.details + " (" + data.error.type + ")");
+                } else if (data.hasOwnProperty("token")) {
+                    localStorage.userid = this.userId;
+                    localStorage.token = data.token;
+                    if (this.redirect != "") {
+                        window.location.replace(String(window.location) + this.redirect);
+                    } else {
+                        window.location.replace(String(window.location).replace("/${id}/red", ""));
+                    }
+
+                    /*
+                     // possible option to push the token
+                     if (this.redirect != "") {
+                     redirVal = String(window.location) + this.redirect;
+                     } else {
+                     redirVal = String(window.location).replace("/${id}/red", "");
+                     }
+                     document.innerHTML('<form action="' + redirVal +'" ' +
+                     'name="tokenForm" method="post" style="display:none;">' +
+                     '<input type="text" name="token" value="' + data.token + '" />' +
+                     '</form>');
+                     document.forms['tokenForm'].submit();
+                     */
+
+                }
+            }
+
+        });
+    </script>
+</dom-module>
