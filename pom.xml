@@ -64,8 +64,8 @@
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>org.activehome.service</groupId>
-            <artifactId>org.activehome.service.linker</artifactId>
+            <groupId>org.activehome</groupId>
+            <artifactId>org.activehome.linker</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
