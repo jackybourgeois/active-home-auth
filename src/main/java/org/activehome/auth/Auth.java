@@ -38,6 +38,7 @@ import org.activehome.service.RequestHandler;
 import org.activehome.tools.Util;
 import org.activehome.context.data.UserInfo;
 import org.kevoree.annotation.ComponentType;
+import org.kevoree.annotation.Param;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -58,6 +59,21 @@ import java.util.UUID;
  */
 @ComponentType
 public class Auth extends Service {
+
+    @Param(defaultValue = "An authentication system to access Active Home.")
+    private String description;
+
+    @Param(defaultValue = "/activehome-auth/master/docs/auth.png")
+    private String img;
+
+    @Param(defaultValue = "/activehome-auth/master/docs/auth.md")
+    private String doc;
+
+    @Param(defaultValue = "/activehome-auth/master/docs/auth.kevs")
+    private String demoScript;
+
+    @Param(defaultValue = "/activehome-auth")
+    private String src;
 
     private HashMap<UUID, AuthEntry> tokenMap;
 
