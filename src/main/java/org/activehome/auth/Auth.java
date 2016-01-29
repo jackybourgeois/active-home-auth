@@ -6,7 +6,7 @@ package org.activehome.auth;
  * $Id:$
  * $HeadURL:$
  * %%
- * Copyright (C) 2016 org.activehome
+ * Copyright (C) 2016 Active Home Project
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -62,17 +62,7 @@ public class Auth extends Service {
 
     @Param(defaultValue = "An authentication system to access Active Home.")
     private String description;
-
-    @Param(defaultValue = "/activehome-auth/master/docs/auth.png")
-    private String img;
-
-    @Param(defaultValue = "/activehome-auth/master/docs/auth.md")
-    private String doc;
-
-    @Param(defaultValue = "/activehome-auth/master/docs/auth.kevs")
-    private String demoScript;
-
-    @Param(defaultValue = "/activehome-auth")
+    @Param(defaultValue = "/active-home-auth")
     private String src;
 
     private HashMap<UUID, AuthEntry> tokenMap;
@@ -107,7 +97,8 @@ public class Auth extends Service {
                 if (obj instanceof JsonObject) {
                     JsonObject ctxRep = (JsonObject) obj;
                     if (ctxRep.isObject()) {
-                        String encPass = new DataPoint(ctxRep.asObject().get("user." + userId + ".pass").asObject()).getValue();
+                        String encPass = new DataPoint(ctxRep.asObject()
+                                .get("user." + userId + ".pass").asObject()).getValue();
                         if (!encPass.equals("")) {
                             UUID token = check(pass, encPass);
                             if (token != null) {
@@ -138,12 +129,18 @@ public class Auth extends Service {
                 if (obj instanceof JsonObject) {
                     JsonObject ctxRep = (JsonObject) obj;
                     if (ctxRep.isObject()) {
-                        String[] groups = new DataPoint(ctxRep.asObject().get(user + ".groups").asObject()).getValue().split(",");
-                        String household = new DataPoint(ctxRep.asObject().get(user + ".household").asObject()).getValue();
-                        String userType = new DataPoint(ctxRep.asObject().get(user + ".type").asObject()).getValue();
-                        if (groups[0].compareTo("") != 0 && !household.equals("") && !userType.equals("")) {
+                        String[] groups = new DataPoint(ctxRep.asObject()
+                                .get(user + ".groups").asObject()).getValue().split(",");
+                        String household = new DataPoint(ctxRep.asObject()
+                                .get(user + ".household").asObject()).getValue();
+                        String userType = new DataPoint(ctxRep.asObject()
+                                .get(user + ".type").asObject()).getValue();
+                        if (groups[0].compareTo("") != 0
+                                && !household.equals("")
+                                && !userType.equals("")) {
                             UserInfo userInfo = new UserInfo(userId, groups, household, userType);
-                            AuthEntry authEntry = new AuthEntry(token, userInfo, api, new Date().getTime() + HOUR);
+                            AuthEntry authEntry = new AuthEntry(token, userInfo,
+                                    api, new Date().getTime() + HOUR);
                             tokenMap.put(token, authEntry);
                             startComponent(authEntry, callback);
                         }
@@ -160,7 +157,8 @@ public class Auth extends Service {
         });
     }
 
-    public void startComponent(AuthEntry authEntry, RequestCallback callback) {
+    public void startComponent(final AuthEntry authEntry,
+                               final RequestCallback callback) {
         UserInfo userInfo = authEntry.getUserInfo();
         ComponentProperties cp = new ComponentProperties(userInfo.getUserType(),
                 userInfo.getId(), new JsonObject(), new String[]{getNode()});
@@ -188,7 +186,8 @@ public class Auth extends Service {
     private UUID check(final String pass,
                        final String encPass) {
         try {
-            Properties prop = Util.loadProperties(System.getProperty("activehome.home") + "/encKey.properties");
+            Properties prop = Util.loadProperties(
+                    System.getProperty("activehome.home") + "/encKey.properties");
             String key = prop.getProperty("encKey");
             // Create key and cipher
             Key aesKey = new SecretKeySpec(key.getBytes(), "AES");
@@ -219,8 +218,9 @@ public class Auth extends Service {
         return null;
     }
 
-    public String encrypt(String pass) {
-        Properties prop = Util.loadProperties(System.getProperty("activehome.home") + "/encKey.properties");
+    public String encrypt(final String pass) {
+        Properties prop = Util.loadProperties(
+                System.getProperty("activehome.home") + "/encKey.properties");
         String key = prop.getProperty("encKey");
         try {
             // Create key and cipher
