@@ -187,7 +187,7 @@ public class Auth extends Service {
                        final String encPass) {
         try {
             Properties prop = Util.loadProperties(
-                    System.getProperty("activehome.home") + "/encKey.properties");
+                    System.getProperty("active-home.home") + "/encKey.properties");
             String key = prop.getProperty("encKey");
             // Create key and cipher
             Key aesKey = new SecretKeySpec(key.getBytes(), "AES");
@@ -220,7 +220,7 @@ public class Auth extends Service {
 
     public String encrypt(final String pass) {
         Properties prop = Util.loadProperties(
-                System.getProperty("activehome.home") + "/encKey.properties");
+                System.getProperty("active-home.home") + "/encKey.properties");
         String key = prop.getProperty("encKey");
         try {
             // Create key and cipher
